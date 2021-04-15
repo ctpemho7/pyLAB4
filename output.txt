@@ -1,0 +1,5 @@
+Denis: 121
+Andrey: 100
+Nick: 88
+Alex: 55
+Bob: 32

@@ -1,0 +1,8 @@
+4
+helloword.exe R X
+pinglog W R
+nya R
+goodluck X W R
+2
+read nya
+write helloword.exe

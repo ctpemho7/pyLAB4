@@ -1,0 +1,830 @@
+Код первой задачи:
+s = input().replace('!', '').replace('?', '').replace('.', '').replace(',', '').replace(':', '').\
+                                                                                             replace(';', '')
+lst = s.split()
+set1 = set(lst)
+if len(set1) == 0:
+    print("Ошибка ввода строки! Программа не принимает на вход знаки препинания")
+else:
+    for elem in set1:
+        print("Вхождений слова «" + elem + "» в исходную строку составляет " + str(lst.count(elem)) + " раз(а)")
+
+######################################################################################################################################################
+
+
+Код второй задачи:
+
+def prove(s: str):
+    sp = s.split(": ")
+    if len(sp) == 2 and sp[0].isalpha() and sp[1].replace("\n", "").isdigit():
+        return True
+    else:
+        return False
+
+
+try:
+    f = open('results.txt', 'r', encoding="utf-8")
+    fileout = open('output.txt', 'w+')
+except FileNotFoundError:
+    print("Создайте файл!")
+    exit()
+
+d = {}
+line = f.readline()
+while line:
+    if prove(line):
+        l = list(line.split(": "))
+        l[1] = int(l[1])
+        d[l[0]] = l[1]
+        line = f.readline()
+    else:
+        print("Ошибка в строке!")
+        exit()
+
+list_items = list(d.items())
+list_items.sort(key=lambda elem: elem[1], reverse=True)
+
+for i in range (len(list_items)):
+    tuple: list = list(list_items[i])
+    s = str(tuple[0]) + ": " + str(tuple[1]) + "\n"
+    fileout.writelines(s)
+f.close()
+fileout.close()
+
+######################################################################################################################################################
+
+
+Код второй задачи:
+filein = open('input2.txt', 'r', encoding="utf-8")
+fileout = open('output2.txt', 'w', encoding="utf-8")
+
+ind1 = ind2 = 0
+line = filein.readlines()
+try:
+    ind1 = int(line[0])  # это количество файлов
+    ind2 = int(line[1 + ind1])  # это количество запросов
+except ValueError:
+    print("Некорректный файл! Неверный формат количества запросов/файлов")
+    fileout.write("Некорректный файл! Неверный формат количества запросов/файлов")
+    exit()
+except IndexError:
+    print("Некорректный файл! Неверный ввод количества запросов/файлов")
+    fileout.write("Некорректный файл! Неверный ввод количества запросов/файлов")
+    exit()
+
+if len(line) != 2 + ind1 + ind2:  # длина line равна количеству файлов+количество запросов + 2
+    print("Некорректный ввод операций!")
+    fileout.write("Некорректный ввод операций!")
+    exit()
+
+files: dict = {}
+for i in range(1, ind1 + 1):  # построчная обработка
+
+    split_line: list = line[i].split(' ', maxsplit=1)
+    if len(split_line) != 2:  # две части у файла: имя и операции
+        print("Ошибка ввода строки!")
+        fileout.write("Ошибка ввода строки!")
+        exit()
+
+    name = str(split_line[0]).replace("    ", "")  # Убираем лишнее
+    operations = str(split_line[1]).replace(" ", "").replace('\n', '')  # ==трока операций
+
+    if not 0 < len(operations) < 4:  # Длина строки операций не превосходит 4 и != 0
+        print('Некорректный ввод операций!')
+        fileout.write("Некорректный ввод операций!")
+        exit()
+
+    for ii in range(len(operations)):  # Проверяем операции
+        if not (operations[ii] == "X" or operations[ii] == "W" or operations[ii] == "R"):
+            print("Такой операции нет!")
+            fileout.write("Такой операции нет!")
+            exit()
+
+    operations = operations.replace("WWW", "W").replace("WW", "W").replace("W", "write ")  # Убираем лишнее
+    operations = operations.replace("RRR", "R").replace("RR", "R").replace("R", "read ")
+    operations = operations.replace("XXX", "X").replace("XX", "X").replace("X", "execute ")
+    operations = operations[:-1]
+    files[name] = operations  # всё в словарь
+
+files_keys = list(files.keys())
+files_values = list(files.values())
+
+for zapros in range(ind1 + 2, len(line)):
+
+    ask: list = str(line[zapros]).split(" ")  # вторая часть массива, в ней запросы
+
+    if len(ask) != 2:  # все запросы состоят из 2 частей, разделённых пробелом
+        print("Ошибка при вводе запроса!")
+        fileout.write("Ошибка при вводе запроса!")
+        exit()
+
+    operation, name = ask[0], ask[1]
+    name = name.replace('\n', '')  # Убираем всё лишнее
+
+    if name not in files_keys:
+        print("Такого файла нет!")
+        fileout.write("Такого файла нет!")
+        exit()
+
+    if operation not in ["read", "write", "execute"]:
+        print("Такого запроса нет!")
+        fileout.write("Такого запроса нет!")
+        exit()
+
+    if operation in files[name]:
+        fileout.write("OK\n")
+    else:
+        fileout.write("Access denied\n")
+
+fileout.close()
+filein.close()
+
+######################################################################################################################################################
+
+
+Код третьей задачи:
+from pprint import pprint
+from random import randint
+
+
+def text_menu_dict():
+    print("1. Задать новые случайные значения словаря\n"
+          "2. Добавить элемент словаря\n"
+          "3. Вывести словарь при помощи pprint\n"
+          "4. Вывести ключи с наибольшим, наименьшим значением и общее среднее значение\n"
+          "5. Удаление элемента по его ключу\n"
+          "6. Перейти к работе со списком словарей\n"
+          "7. Выход")
+
+
+def text_menu_dict_small():
+    print("1. Задать новые случайные значения словаря\n"
+          "2. Добавить элемент словаря\n"
+          "3. Выход")
+
+
+def text_menu_list():
+    print("1. Вывести список при помощи pprint\n"
+          "2. Сортировка списка по значениям при помощи лямбда функции\n"
+          "3. Сортировка списка по ключам при помощи лямбда функции\n"
+          "4. Задать значение элемента по введенному ключу\n"
+          "5. Вывести на экран ключи с одинаковыми значениями\n"
+          "6. Выход")
+
+
+def int_func() -> int:
+    bo = True
+    while bo:
+        try:
+            nn = int(input())
+        except ValueError:
+            print('Введено не натуральное число!')
+        else:
+            if not nn > 0:
+                print("Введено отрицательное число или ноль!")
+            else:
+                return nn
+
+
+airports = ["Внуково", "Домодедово", "Торонто", "Дубай", "Токио",
+            "Лондон", "Лос-Анжелес", "Пекин", "Хельсинки", "Гонконг",
+            "Франкфурт", "Стамбул", "Сингапур", "Дели", "Лас Вегас"]
+
+
+def rnd_dict(dd: dict):  # 1
+    for i in range(15):
+        dd[airports[i]] = randint(10000, 110000)
+
+
+def fill_dict(dd: dict):  # 2
+    key = input("Введите значение ключа: ")
+    print("Введите значение пассажиропотока: ")
+    value = int_func()
+    dd[key] = value
+
+
+def max_min_avr(dd: dict):  # 4
+    maxi = max(dd, key=dd.get)
+    minn = min(dd, key=dd.get)
+    print("Максимальное значение в аэропорте ", maxi, ":", dd[maxi], sep=' ')
+    print("Минимальное значение в аэропорте", minn, ":", dd[minn], sep=' ')
+    all_sum = 0
+    for i in dd.keys():
+        all_sum = all_sum + dd[i]
+    print("Средний пассажиропоток составляет:", round(all_sum / len(dd)), sep=' ')
+
+
+def pop_dict(dd: dict):  # 5
+    key = input("Введите значение ключа: ")
+    if key not in dd.keys():
+        print("Такого ключа нет!")
+    else:
+        dd.pop(key)
+
+
+def create_list(dd: dict):  # 1list
+    ll = []
+    for key, value in dd.items():
+        ff = {'key': key,
+              'value': value}
+        ll.append(ff)
+    return ll
+
+
+def sort_list_value(ll: list):  # 2list
+    ll.sort(key=lambda x: x['value'])  # свой порядок сортировки
+    pprint(ll)
+
+
+def sort_list_key(ll: list):  # 2list
+    ll.sort(key=lambda x: x['key'])  # свой порядок сортировки
+    pprint(ll)
+
+
+def fill_list(ll: list):  # 3list
+    key = input("Введите значение ключа: ")
+    print("Введите значение пассажиропотока: ")
+    value = int_func()
+    ff = {'key': key,
+          'value': value}
+    ll.append(ff)
+    pprint(ll)
+
+
+def find_the_same_values_in_list(param_list: list):
+    print("Введите значение, ключи которого нужно найти: ")
+    find = int_func()
+    keys = list()
+    for index in range(len(param_list)):
+        new_second = list(param_list[index].values())
+        keys.append(new_second)
+    founded = dict()
+    for mas_index in range(len(keys)):
+        if find == keys[mas_index][1]:
+            founded[keys[mas_index][0]] = keys[mas_index][1]
+    if len(founded) == 0:
+        print("Ключей с таким значением нет!")
+    else:
+        print("Обнаружены следующие значения: ")
+        pprint(founded)
+
+
+d = {}
+lst = list()
+fist = True
+list_menu = False
+while fist:
+    if len(d) == 0:
+        text_menu_dict_small()
+        menu = int_func()
+        if menu == 1:
+            rnd_dict(d)
+        if menu == 2:
+            fill_dict(d)
+        if menu == 3:
+            exit()
+        elif not 1 <= menu <= 3:
+            print('Некорректный ввод')
+    else:
+        text_menu_dict()
+        menu = int_func()
+        if menu == 1:
+            rnd_dict(d)
+        if menu == 2:
+            fill_dict(d)
+        if menu == 3:
+            pprint(d)
+        if menu == 4:
+            max_min_avr(d)
+        if menu == 5:
+            pop_dict(d)
+        if menu == 6:
+            list_menu = True
+            lst = create_list(d)
+        if menu == 7:
+            exit()
+        elif not 1 <= menu <= 7:
+            print('Некорректный ввод')
+
+    while list_menu:
+        text_menu_list()
+        menu = int_func()
+        if menu == 1:
+            pprint(lst)
+        if menu == 2:
+            sort_list_value(lst)
+        if menu == 3:
+            sort_list_key(lst)
+        if menu == 4:
+            fill_list(lst)
+        if menu == 5:
+            find_the_same_values_in_list(lst)
+        if menu == 6:
+            exit()
+        elif not 1 <= menu <= 6:
+            print('Некорректный ввод')
+
+######################################################################################################################################################
+
+
+Код четвёртой задачи (требуется файл database.json):
+import json
+from pprint import pprint
+
+
+def js():
+    # Serializing json
+    json_object = json.dumps(dict_data, indent=4, ensure_ascii=False)
+
+    # Writing to sample.json
+    with open("database.json", "w", encoding="utf-8") as outfile:
+        outfile.write(json_object)
+
+    # Reading from json file
+#    with open('database.json', 'r', encoding="utf-8") as openfile:
+#        json_object = json.load(openfile)
+
+
+dict_data = {
+    "Самолеты":
+        [
+            {
+                "id": 1,  # в id связка между пассажиром и самолётом
+                "Номер": 777,
+                "Модель": "Airbus",
+                "Маршрут": "Тель-Авив -> Нур-Султан",
+                "Дата ТО": "09.02.2017"
+            },
+            {
+                "id": 2,
+                "Номер": 12378,
+                "Модель": "Airbus",
+                "Маршрут": "Пермь -> Рейкьявик",
+                "Дата ТО": "10.07.2019"
+            }
+        ],
+
+    "Пассажиры":
+        [{
+            "ФИО": "Иванова Г.И.",
+            "История":
+                [{
+                    "id": 1,  # к id самолёта привязан пассажир
+                    "Дата полета": "15.04.2020",
+                    "Место": 152
+                }]
+        },
+            {
+                "ФИО": "Александров Е.А.",
+                "История":
+                    [{
+                        "id": 2,  # к id самолёта привязан пассажир
+                        "Дата полета": "13.07.2021",
+                        "Место": 18
+                    }]
+            }
+
+        ]
+
+}
+
+
+def text_menu():
+    print("1. Добавить самолёт\n"
+          "2. Добавить пассажира\n"
+          "3. Добавить перелёт в историю пассажира\n"
+          "4. Вывести информацию об самолёте\n"
+          "5. Вывести информацию о пассажире\n"
+          "6. Удалить самолёт из базы данных\n"
+          "7. Удалить пассажира из базы данных\n"
+          "8. Удалить самолёт из истории пассажира\n"
+          "9. Изменить данные самолёта\n"
+          "10. Изменить данные пассажира\n"
+          "11. Выход")
+
+
+def check_uint() -> int:
+    bo = True
+    while bo:
+        try:
+            nn = int(input())
+        except ValueError:
+            print('Введено не натуральное число!')
+        else:
+            if not nn > 0:
+                print("Введено отрицательное число или ноль!")
+            else:
+                return nn
+
+
+def set_date():
+    month = year = day = 0
+    DAYS_IN_MONTH = [-1, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    check = True
+    while check:
+        print("Введите год: ")
+        year = check_uint()
+        if not 1970 <= year <= 9999:
+            print("Введите корректный год!")
+        else:
+            check = False
+
+    if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+        DAYS_IN_MONTH[2] = 29
+
+    check = True
+    while check:
+        print("Введите номер месяца от 1 до 12: ")
+        month = check_uint()
+        if not 1 <= month <= 12:
+            print("Введите корректный месяц!")
+        else:
+            check = False
+    s_month = str(month)
+    if len(s_month) != 2:
+        s_month = '0' + str(month)
+
+    days_in_month = DAYS_IN_MONTH[month]
+    check = True
+    while check:
+        print("Введите день месяца: ")
+        day = check_uint()
+        if not 1 <= day <= days_in_month:
+            print("Введите корректный день!")
+        else:
+            check = False
+
+    s_day = str(day)
+    if len(s_day) != 2:
+        s_day = '0' + str(day)
+
+    return s_day + '.' + s_month + '.' + str(year)
+
+
+def available_ids() -> list:
+    lst = []
+    for elem_id in dict_data["Самолеты"]:
+        lst.append(elem_id["id"])
+    return lst
+
+
+def add_plane():
+    d = {}
+    bo, planeId = True, 0
+    while bo:
+        listOfIds = available_ids()
+        print("Введите новый id самолёта, недоступны следующие id:")
+        print(listOfIds)
+        planeId = check_uint()
+        if planeId in listOfIds:
+            print("Такой id уже есть!")
+        else:
+            bo = False
+
+    print("Введите номер самолёта: ")
+    number = check_uint()
+    model = input("Введите название модели самолёта: ")
+    fromm = input("Введите название города отправления: ")
+    to = input("Введите название города назначения: ")
+    path = fromm + " -> " + to
+    print("Укажите дату ТО: ")
+    dateTO = set_date()
+
+    d["id"] = planeId
+    d["Номер"] = number
+    d["Модель"] = model
+    d["Маршрут"] = path
+    d["Дата ТО"] = dateTO
+
+    dict_data["Самолеты"].append(d)
+    js()
+
+
+def add_passenger():
+    d = {}
+
+    fio = input("Введите ФИО пасссажира: ")
+    bo, passId = True, 0
+    while bo:
+        listOfIds = available_ids()
+        print("Введите id самолёта, на котором летит пассажир. Вот эти id:")
+        print(listOfIds)
+        passId = check_uint()
+        if passId not in listOfIds:
+            print("Такого id нет!")
+        else:
+            bo = False
+
+    print("Укажите дату полёта: ")
+    flightDate = set_date()
+
+    print("Укажите место в самолёте: ")
+    place = check_uint()
+
+    history = [{
+            "id": passId,
+            "Дата полета": flightDate,
+            "Место": place
+            }]
+
+    d["ФИО"] = fio
+    d["История"] = history
+
+    dict_data["Пассажиры"].append(d)
+    js()
+
+
+def add_history():
+    all_passengers = dict_data["Пассажиры"]
+    fio_passengers = []
+    print("Список всех пассажиров: ")  # Печать всех пассажиров
+    for elem in all_passengers:
+        pprint(elem["ФИО"])
+        fio_passengers.append(elem["ФИО"])
+
+    # Ввод фамилии
+    bo, ind = True, -1
+    while bo:
+        fio = input("Введите ФИО пассажира: ")
+        for i in range(len(fio_passengers)):
+            if fio == fio_passengers[i]:
+                ind = i
+                bo = False
+                break
+        if ind == -1:
+            print("Такого ФИО нет!")
+
+    bo, passId = True, 0
+    while bo:  # Ввод ID для самолёта
+        listOfIds = available_ids()
+        print("Введите id самолёта, на котором летит пассажир. Вот эти id:")
+        print(listOfIds)
+        passId = check_uint()
+        if passId not in listOfIds:
+            print("Такого id нет!")
+        else:
+            bo = False
+
+    print("Укажите дату полёта: ")
+    flightDate = set_date()
+
+    print("Укажите место в самолёте: ")
+    place = check_uint()
+
+    history = {
+            "id": passId,
+            "Дата полета": flightDate,
+            "Место": place
+            }
+    n = list(dict_data["Пассажиры"][ind]["История"])
+    n.append(history)
+    dict_data["Пассажиры"][ind]["История"] = n
+    js()
+
+
+def show_plane():
+    bo, sh = True, 0
+    listOfIds = available_ids()
+    while bo:
+        print("Выберите нужный самолёт: ")
+        print(listOfIds)
+        sh = check_uint()
+        if sh not in listOfIds:
+            print("Такого самолёта нет!")
+        else:
+            bo = False
+
+    sh = listOfIds.index(sh)  # костыль для правильного определения индекса
+    pprint(dict_data["Самолеты"][sh])
+
+
+def show_pass():
+
+    all_passengers = dict_data["Пассажиры"]
+    fio_passengers = []
+    print("Список всех пассажиров: ")  # Печать всех пассажиров
+    for elem in all_passengers:
+        pprint(elem["ФИО"])
+        fio_passengers.append(elem["ФИО"])
+    count = 0
+    fio = input("Введите ФИО пассажира: ")
+    for elem in all_passengers:
+        if elem["ФИО"] == fio:
+            pprint(elem)
+            count = 1
+    if not count:
+        print("Таких пассажиров нет!")
+
+
+def del_plane():
+    bo, sh = True, 0
+    listOfIds = available_ids()
+    while bo:
+        print("Выберите нужный самолёт: ")
+        print(listOfIds)
+        sh = check_uint()
+        if sh not in listOfIds:
+            print("Такого самолёта нет!")
+        else:
+            bo = False
+
+    sh = listOfIds.index(sh)  # костыль для правильного определения индекса
+    deli = dict_data["Самолеты"][sh]
+    dict_data["Самолеты"].remove(deli)
+    js()
+
+
+def del_passenger():
+    all_passengers = dict_data["Пассажиры"]
+    fio_passengers = []
+    print("Список всех пассажиров: ")  # Печать всех пассажиров
+    for elem in all_passengers:
+        pprint(elem["ФИО"])
+        fio_passengers.append(elem["ФИО"])
+
+    # Ввод фамилии
+    bo, ind = True, -1
+    while bo:
+        fio = input("Введите ФИО пассажира: ")
+        for i in range(len(fio_passengers)):
+            if fio == fio_passengers[i]:
+                ind = i
+                bo = False
+                break
+        if ind == -1:
+            print("Такого ФИО нет!")
+
+    deli = dict_data["Пассажиры"][ind]
+    dict_data["Пассажиры"].remove(deli)
+    js()
+
+
+def del_history():
+    all_passengers = dict_data["Пассажиры"]
+    fio_passengers = []
+    print("Список всех пассажиров: ")  # Печать всех пассажиров
+    for elem in all_passengers:
+        pprint(elem["ФИО"])
+        fio_passengers.append(elem["ФИО"])
+
+    # Ввод фамилии
+    bo, ind = True, -1
+    while bo:
+        fio = input("Введите ФИО пассажира: ")
+        for i in range(len(fio_passengers)):
+            if fio == fio_passengers[i]:
+                ind = i
+                bo = False
+                break
+        if ind == -1:
+            print("Такого ФИО нет!")
+
+    history_list = ["000"]  # заполняем лист и тут же его печатаем, "000" нужен для корректного отображения
+    print("История полётов этого пассажира: ")
+    for i in range(len(dict_data["Пассажиры"][ind]["История"])):
+        history_list.append(dict_data["Пассажиры"][ind]["История"][i])
+        print(str(i+1) + " " + str(history_list[i+1]))
+
+    if len(history_list) == 1:
+        print("Нет истории, нечего удалять!")
+    else:
+        print("Введите значение, которое нужно удалить: ")
+        bo, n = True, -1
+        while bo:
+            n = check_uint()
+            if n > len(history_list):
+                print("Такого индекса нет!")
+            else:
+                bo = False
+
+        history_list.remove(history_list[n])
+        history_list.remove("000")
+        dict_data["Пассажиры"][ind]["История"] = history_list
+        js()
+
+
+def edit_plane():
+    bo, sh = True, 0
+    listOfIds = available_ids()
+    while bo:
+        print("Выберите нужный самолёт: ")
+        print(listOfIds)
+        sh = check_uint()
+        if sh not in listOfIds:
+            print("Такого самолёта нет!")
+        else:
+            bo = False
+
+    sh = listOfIds.index(sh)  # костыль для правильного определения индекса
+    print("Данные этого самолёта: ")
+    pprint(dict_data["Самолеты"][sh])
+    keys = ["Дата ТО", "Маршрут", "Модель", "Номер"]
+
+    bo, key = True, ""
+    while bo:
+        key = input("Введите ключ для изменения: ")
+        if key not in keys:
+            print("Такого ключа нет!")
+        else:
+            bo = False
+
+    print("Введите новое значение поля: ")
+    value = ""
+    if key == "Дата ТО":
+        value = set_date()
+    if key == "Маршрут":
+        fromm = input("Введите название города отправления: ")
+        to = input("Введите название города назначения: ")
+        value = fromm + " -> " + to
+    if key == "Модель":
+        value = input()
+    if key == "Номер":
+        value = check_uint()
+
+    dict_data["Самолеты"][sh][key] = value
+    js()
+
+
+def edit_passenger():
+    print("Вы можете изменить ФИО пассажира: ")
+    all_passengers = dict_data["Пассажиры"]
+    fio_passengers = []
+    print("Список всех пассажиров: ")  # Печать всех пассажиров
+    for elem in all_passengers:
+        pprint(elem["ФИО"])
+        fio_passengers.append(elem["ФИО"])
+
+    # Ввод фамилии
+    bo, ind = True, -1
+    while bo:
+        fio = input("Введите ФИО пассажира: ")
+        for i in range(len(fio_passengers)):
+            if fio == fio_passengers[i]:
+                ind = i
+                bo = False
+                break
+        if ind == -1:
+            print("Такого ФИО нет!")
+
+    new_fio = input("Введите новое ФИО: ")
+    dict_data["Пассажиры"][ind]["ФИО"] = new_fio
+    js()
+
+
+js()
+fist = True
+while fist:
+    if len(dict_data["Самолеты"]) != 0 and len(dict_data["Пассажиры"]) != 0:
+        text_menu()
+        menu = check_uint()
+
+        if menu == 1:
+            add_plane()
+        if menu == 2:
+            add_passenger()
+        if menu == 3:
+            add_history()
+        if menu == 4:
+            show_plane()
+        if menu == 5:
+            show_pass()
+        if menu == 6:
+            del_plane()
+        if menu == 7:
+            del_passenger()
+        if menu == 8:
+            del_history()
+        if menu == 9:
+            edit_plane()
+        if menu == 10:
+            edit_passenger()
+        if menu == 11:
+            exit()
+        elif not 1 <= menu <= 11:
+            print('Некорректный ввод')
+
+    else:
+        print("Пустая база данных! Добавьте недостающие поля для продолжения работы")
+        if len(dict_data["Самолеты"]) == 0:
+            print("1. Добавить самолёт\n"
+                  "2. Выход")
+            menu = check_uint()
+            if menu == 1:
+                add_plane()
+            if menu == 2:
+                exit()
+            elif not 1 <= menu <= 2:
+                print('Некорректный ввод')
+
+        elif len(dict_data["Пассажиры"]) == 0:
+            print("1. Добавить пассажира\n"
+                  "2. Выход")
+            menu = check_uint()
+            if menu == 1:
+                add_passenger()
+            if menu == 2:
+                exit()
+            elif not 1 <= menu <= 2:
+                print('Некорректный ввод')
+
